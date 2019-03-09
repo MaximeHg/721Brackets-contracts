@@ -7,8 +7,6 @@ import { increaseTimeTo, duration } from './helpers/increaseTime';
 const BracketCore = artifacts.require("BracketCore");
 const BracketMarketplace = artifacts.require("BracketMarketplace");
 
-const BigNumber = require('bignumber.js');
-
 const should = require('chai')
   .use(require('chai-as-promised'))
   .should();
@@ -131,42 +129,6 @@ contract('BracketMarketplace', function(accounts) {
     it('Should be able to buy a listed bracket', async () => {
       await BracketMarketplaceInstance.buyBracketOnSale(0, {from:accounts[1], value: "100000000000000000"})
       let listing = await BracketMarketplaceInstance.isOnSale(0);
-      assert.equal(listing[0], false);
-      let owner = await BracketCoreInstance.ownerOf(0);
-      assert.equal(owner, accounts[1]);
-    });
-
-    it('Approval should be cleared after a resell', async () => {
-      let approved = await BracketCoreInstance.getApproved(0);
-      assert.equal(approved, "0x0000000000000000000000000000000000000000");
-    });
-
-    it('Should be able to clean up a listing', async () => {
-      await BracketCoreInstance.approve(BracketMarketplaceInstance.address, 0, {from:accounts[1]})
-      await BracketMarketplaceInstance.sellBracket(0, "1000000000000000", {from:accounts[1]});
-      let listing = await BracketMarketplaceInstance.isOnSale(0);
-      assert.equal(listing[0], true);
-      await BracketCoreInstance.approve("0x0000000000000000000000000000000000000000", 0, {from:accounts[1]})
-      await BracketMarketplaceInstance.clearListing(0);
-      listing = await BracketMarketplaceInstance.isOnSale(0);
-      assert.equal(listing[0], false);
-      let owner = await BracketCoreInstance.ownerOf(0);
-      assert.equal(owner, accounts[1]);
-    });
-
-    it('Should be able to clean up a listing during a resell tentative', async () => {
-      await BracketCoreInstance.approve(BracketMarketplaceInstance.address, 0, {from:accounts[1]})
-      await BracketMarketplaceInstance.sellBracket(0, "1000000000000000", {from:accounts[1]});
-      let listing = await BracketMarketplaceInstance.isOnSale(0);
-      assert.equal(listing[0], true);
-      let balanceBefore = await web3.eth.getBalance(accounts[3])
-      await BracketCoreInstance.approve("0x0000000000000000000000000000000000000000", 0, {from:accounts[1]})
-      await BracketMarketplaceInstance.buyBracketOnSale(0, {from:accounts[3], value: "100000000000000000"})
-      let balanceAfter = await web3.eth.getBalance(accounts[3])
-      balanceBefore = new BigNumber(balanceBefore);
-      balanceAfter = new BigNumber(balanceAfter);
-      assert.isTrue(balanceBefore.minus(new BigNumber(1000000000000000)).isLessThan(balanceAfter))
-      listing = await BracketMarketplaceInstance.isOnSale(0);
       assert.equal(listing[0], false);
       let owner = await BracketCoreInstance.ownerOf(0);
       assert.equal(owner, accounts[1]);
