@@ -5,6 +5,7 @@ import latestTime from './helpers/latestTime';
 import { increaseTimeTo, duration } from './helpers/increaseTime';
 
 const BracketCore = artifacts.require("BracketCore");
+const BracketMarketplace = artifacts.require("BracketMarketplace");
 
 const should = require('chai')
   .use(require('chai-as-promised'))
@@ -59,6 +60,37 @@ contract('BracketCore', function(accounts) {
     it('Next token id should be #2', async () => {
       let nextTokenId = await BracketCoreInstance.getNextTokenId();
       assert.equal(nextTokenId.toNumber(), 2);
+    });
+
+  });
+
+});
+
+contract('BracketMarketplace', function(accounts) {
+
+  describe('Constructor', () => {
+    let BracketCoreInstance;
+    let BracketMarketplaceInstance;
+
+    before(async () => {
+      BracketCoreInstance = await BracketCore.new();
+      BracketMarketplaceInstance = await BracketMarketplace.new(BracketCoreInstance.address);
+    });
+
+    it('BracketCore instance should be set', async () => {
+      let addressCore = await BracketMarketplaceInstance.bracketContract();
+      assert.equal(addressCore, BracketCoreInstance.address);
+    });
+
+  });
+
+  describe('Bracket creation', () => {
+    let BracketCoreInstance;
+    let BracketMarketplaceInstance;
+
+    before(async () => {
+      BracketCoreInstance = await BracketCore.new();
+      BracketMarketplaceInstance = await BracketMarketplace.new(BracketCoreInstance.address);
     });
 
   });
