@@ -3,7 +3,7 @@ pragma solidity ^0.5.0;
 import './BracketCore.sol';
 
 contract BracketMarketplace {
-  BracketCore bracketContract;
+  BracketCore public bracketContract;
 
   struct saleStatus {
     bool onSale;
