@@ -56,6 +56,8 @@ contract BracketMarketplace {
 
     owner.transfer(onSale[tokenId].price);
 
+    onSale[tokenId].onSale = false;
+
     emit BracketSold(tokenId, owner, msg.sender);
   }
 
