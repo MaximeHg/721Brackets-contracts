@@ -25,9 +25,9 @@ contract BracketMarketplace {
   function buyNewBracket(uint8[63] memory predictions) public payable {
     require(msg.value >= bracketPrice);
 
-    //uint tokenId = bracketContract.mint(msg.sender, predictions);
+    uint tokenId = bracketContract.mintBracket(msg.sender, predictions);
 
-    //emit BracketCreated(tokenId, predictions);
+    emit BracketCreated(tokenId, predictions);
   }
 
   function sellBracket(uint tokenId, uint price) public {

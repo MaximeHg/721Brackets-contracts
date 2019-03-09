@@ -22,16 +22,16 @@ contract BracketCore is ERC721Full, ERC721Mintable {
   }
 
   function mintBracket(address to, uint8[63] memory bracketPredictions) public onlyMinter submissionsAllowed
-    //returns (uint)
+    returns (uint)
   {
     predictions[nextTokenId] = bracketPredictions;
     super.mint(to, nextTokenId);
 
-    //emit NewSubmissions(nextTokenId, bracketPredictions);
+    emit NewSubmissions(nextTokenId, bracketPredictions);
 
-    incrementTokenCounter();
+    nextTokenId++;
 
-    //return 0;
+    return(nextTokenId-1);
   }
 
   function changePredictions(uint tokenId, uint8[63] memory bracketPredictions) public submissionsAllowed {
@@ -39,10 +39,6 @@ contract BracketCore is ERC721Full, ERC721Mintable {
 
     predictions[tokenId] = bracketPredictions;
     emit UpdatedSubmissions(tokenId, bracketPredictions);
-  }
-
-  function incrementTokenCounter() internal {
-    nextTokenId = nextTokenId + 1;
   }
 
   function getPredictions(uint256 tokenId) public view returns(uint8[63] memory) {
