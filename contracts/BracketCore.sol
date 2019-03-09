@@ -10,6 +10,9 @@ contract BracketCore is ERC721Full, ERC721Mintable {
   // Thursday 21 March 2019 16:00:00 GMT
   uint submissionsDeadline = 1553184000;
 
+  event NewSubmissions(uint tokenId, uint8[63] predictions);
+  event UpdatedSubmissions(uint tokenId, uint8[63] predictions);
+
   constructor() ERC721Full("March Madness Bracket", "MMBK") public {
   }
 
@@ -22,6 +25,8 @@ contract BracketCore is ERC721Full, ERC721Mintable {
     predictions[nextTokenId] = bracketPredictions;
     super.mint(to, nextTokenId);
 
+    emit NewSubmissions(nextTokenId, bracketPredictions);
+
     nextTokenId++;
   }
 
@@ -29,6 +34,7 @@ contract BracketCore is ERC721Full, ERC721Mintable {
     require(ownerOf(tokenId) == msg.sender);
 
     predictions[tokenId] = bracketPredictions;
+    emit UpdatedSubmissions(tokenId, bracketPredictions);
   }
 
   function getPredictions(uint256 tokenId) public view returns(uint8[63] memory) {

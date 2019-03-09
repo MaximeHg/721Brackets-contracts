@@ -13,10 +13,15 @@ contract BracketVerification {
 
   mapping(uint=>BracketScoring) bracketScorings;
 
+  // Saturday 23 March 2019 11:00:00 GMT
   uint round1End = 1553338800;
+  // Monday 25 March 2019 11:00:00 GMT
   uint round2End = 1553511600;
+  // Saturday 30 March 2019 11:00:00 GMT
   uint round3End = 1553943600;
+  // Monday 1 April 2019 10:00:00 GMT
   uint round4End = 1554112800;
+  // Monday 8 April 2019 04:00:00 GMT
   uint tournamentEnd = 1554696000;
 
   uint8[63] tournamentResults;
