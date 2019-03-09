@@ -23,7 +23,7 @@ contract BracketMarketplace {
   }
 
   function buyNewBracket(uint8[63] memory predictions) public payable {
-    require(msg.value >= bracketPrice);
+    require(msg.value >= bracketPrice, "price paid not enough");
 
     uint tokenId = bracketContract.mintBracket(msg.sender, predictions);
 
