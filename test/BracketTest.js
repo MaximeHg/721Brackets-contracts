@@ -20,6 +20,10 @@ contract('BracketCore', function(accounts) {
     });
 
     it('ERC721 parameters should be correctly set', async () => {
+      let name = await BracketCoreInstance.name();
+      let symbol = await BracketCoreInstance.symbol();
+      assert.equal(name, "March Madness Bracket");
+      assert.equal(symbol, "MMBK");
     });
 
   });
