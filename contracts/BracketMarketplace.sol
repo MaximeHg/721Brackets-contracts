@@ -69,6 +69,8 @@ contract BracketMarketplace {
 
       emit BracketSold(tokenId, owner, msg.sender);
     } else {
+      // TO CHECK
+      msg.sender.transfer(msg.value);
       emit ListingCleared(tokenId);
     }
 
