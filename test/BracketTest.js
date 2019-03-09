@@ -129,7 +129,10 @@ contract('BracketMarketplace', function(accounts) {
     });
 
     it('Should be able to buy a listed bracket', async () => {
-      await BracketMarketplaceInstance.buyBracketOnSale(0, {from:accounts[1], value: "100000000000000000"})
+      let balanceBefore = new BigNumber(await web3.eth.getBalance(accounts[1]))
+      await BracketMarketplaceInstance.buyBracketOnSale(0, {from:accounts[1], value: "100000000000000000", gasPrice:0})
+      let balanceAfter = new BigNumber(await web3.eth.getBalance(accounts[1]))
+      assert.isTrue(balanceBefore.minus(100000000000000000).isEqualTo(balanceAfter))
       let listing = await BracketMarketplaceInstance.isOnSale(0);
       assert.equal(listing[0], false);
       let owner = await BracketCoreInstance.ownerOf(0);
@@ -159,13 +162,13 @@ contract('BracketMarketplace', function(accounts) {
       await BracketMarketplaceInstance.sellBracket(0, "1000000000000000", {from:accounts[1]});
       let listing = await BracketMarketplaceInstance.isOnSale(0);
       assert.equal(listing[0], true);
-      let balanceBefore = await web3.eth.getBalance(accounts[3])
+
+      let balanceBefore = new BigNumber(await web3.eth.getBalance(accounts[3]))
       await BracketCoreInstance.approve("0x0000000000000000000000000000000000000000", 0, {from:accounts[1]})
-      await BracketMarketplaceInstance.buyBracketOnSale(0, {from:accounts[3], value: "100000000000000000"})
-      let balanceAfter = await web3.eth.getBalance(accounts[3])
-      balanceBefore = new BigNumber(balanceBefore);
-      balanceAfter = new BigNumber(balanceAfter);
-      assert.isTrue(balanceBefore.minus(new BigNumber(1000000000000000)).isLessThan(balanceAfter))
+      await BracketMarketplaceInstance.buyBracketOnSale(0, {from:accounts[3], value: "100000000000000000", gasPrice:0})
+      let balanceAfter = new BigNumber(await web3.eth.getBalance(accounts[3]))
+      assert.isTrue(balanceBefore.isEqualTo(balanceAfter))
+
       listing = await BracketMarketplaceInstance.isOnSale(0);
       assert.equal(listing[0], false);
       let owner = await BracketCoreInstance.ownerOf(0);
