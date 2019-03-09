@@ -129,10 +129,16 @@ contract('BracketMarketplace', function(accounts) {
     });
 
     it('Should be able to buy a listed bracket', async () => {
+      let balanceSellerBefore = new BigNumber(await web3.eth.getBalance(accounts[2]))
       let balanceBefore = new BigNumber(await web3.eth.getBalance(accounts[1]))
-      await BracketMarketplaceInstance.buyBracketOnSale(0, {from:accounts[1], value: "100000000000000000", gasPrice:0})
+      await BracketMarketplaceInstance.buyBracketOnSale(0, {from:accounts[1], value: "1000000000000000", gasPrice:0})
       let balanceAfter = new BigNumber(await web3.eth.getBalance(accounts[1]))
-      assert.isTrue(balanceBefore.minus(100000000000000000).isEqualTo(balanceAfter))
+      let balanceSellerAfter = new BigNumber(await web3.eth.getBalance(accounts[2]))
+
+      // balance checks
+      assert.isTrue(balanceSellerBefore.plus(1000000000000000).isEqualTo(balanceSellerAfter))
+      assert.isTrue(balanceBefore.minus(1000000000000000).isEqualTo(balanceAfter))
+
       let listing = await BracketMarketplaceInstance.isOnSale(0);
       assert.equal(listing[0], false);
       let owner = await BracketCoreInstance.ownerOf(0);
