@@ -62,4 +62,8 @@ contract BracketMarketplace {
   function executeTransfer(uint tokenId, address from, address to) private {
     bracketContract.transferFrom(from, to, tokenId);
   }
+
+  function isOnSale(uint tokenId) public view returns (bool, uint) {
+    return (onSale[tokenId].onSale, onSale[tokenId].price);
+  }
 }
