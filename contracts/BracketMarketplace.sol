@@ -1,8 +1,9 @@
 pragma solidity ^0.5.0;
 
+import 'openzeppelin-solidity/contracts/ownership/Ownable.sol';
 import './BracketCore.sol';
 
-contract BracketMarketplace {
+contract BracketMarketplace is Ownable {
   BracketCore public bracketContract;
 
   struct saleStatus {
@@ -84,5 +85,13 @@ contract BracketMarketplace {
 
   function isOnSale(uint tokenId) public view returns (bool, uint) {
     return (onSale[tokenId].onSale, onSale[tokenId].price);
+  }
+
+  function withdrawFunds() public onlyOwner {
+    _withdraw(msg.sender);
+  }
+
+  function _withdraw(address payable _to) private {
+    _to.transfer(address(this).balance);
   }
 }
