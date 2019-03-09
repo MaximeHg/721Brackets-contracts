@@ -6,9 +6,9 @@ import 'openzeppelin-solidity/contracts/token/ERC721/ERC721Mintable.sol';
 contract BracketCore is ERC721Full, ERC721Mintable {
   mapping (uint=>uint8[63]) predictions;
 
-  uint nextTokenId = 0;
+  uint public nextTokenId = 0;
   // Thursday 21 March 2019 16:00:00 GMT
-  uint submissionsDeadline = 1553184000;
+  uint public submissionsDeadline = 1553184000;
 
   event NewSubmissions(uint tokenId, uint8[63] predictions);
   event UpdatedSubmissions(uint tokenId, uint8[63] predictions);
@@ -21,17 +21,17 @@ contract BracketCore is ERC721Full, ERC721Mintable {
     _;
   }
 
-  function mint(address to, uint8[63] memory bracketPredictions) public onlyMinter submissionsAllowed
-    returns (uint)
+  function mintBracket(address to, uint8[63] memory bracketPredictions) public onlyMinter submissionsAllowed
+    //returns (uint)
   {
     predictions[nextTokenId] = bracketPredictions;
     super.mint(to, nextTokenId);
 
-    emit NewSubmissions(nextTokenId, bracketPredictions);
+    //emit NewSubmissions(nextTokenId, bracketPredictions);
 
-    nextTokenId++;
+    incrementTokenCounter();
 
-    return (nextTokenId - 1);
+    //return 0;
   }
 
   function changePredictions(uint tokenId, uint8[63] memory bracketPredictions) public submissionsAllowed {
@@ -41,7 +41,15 @@ contract BracketCore is ERC721Full, ERC721Mintable {
     emit UpdatedSubmissions(tokenId, bracketPredictions);
   }
 
+  function incrementTokenCounter() internal {
+    nextTokenId = nextTokenId + 1;
+  }
+
   function getPredictions(uint256 tokenId) public view returns(uint8[63] memory) {
     return predictions[tokenId];
+  }
+
+  function getNextTokenId() public view returns(uint) {
+    return nextTokenId;
   }
 }

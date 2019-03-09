@@ -37,8 +37,15 @@ contract('BracketCore', function(accounts) {
 
     it('Should be able to mint a token id #0 with no predictions', async () => {
       let predictionsArray = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-      await BracketCoreInstance.mint(accounts[0], predictionsArray);
+      await BracketCoreInstance.mintBracket(accounts[0], predictionsArray);
       let owner = await BracketCoreInstance.ownerOf(0);
+      assert.equal(owner, accounts[0]);
+    });
+
+    it('Should be able to mint a token id #1 with no predictions', async () => {
+      let predictionsArray = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+      await BracketCoreInstance.mintBracket(accounts[0], predictionsArray);
+      let owner = await BracketCoreInstance.ownerOf(1);
       assert.equal(owner, accounts[0]);
     });
 
@@ -47,6 +54,11 @@ contract('BracketCore', function(accounts) {
       await BracketCoreInstance.changePredictions(0, predictionsArray);
       let predictions = await BracketCoreInstance.getPredictions(0);
       assert.equal(predictions[0].toNumber(), predictionsArray[0]);
+    });
+
+    it('Next token id should be #2', async () => {
+      let nextTokenId = await BracketCoreInstance.getNextTokenId();
+      assert.equal(nextTokenId.toNumber(), 2);
     });
 
   });

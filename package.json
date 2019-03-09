@@ -23,8 +23,10 @@
     "ethereumjs-util": "^6.0.0",
     "mocha-lcov-reporter": "^1.3.0",
     "openzeppelin-solidity": "^2.1.3",
+    "solc": "^0.5.5",
+    "solc-js": "^1.0.0",
     "solidity-coverage": "^0.5.4",
-    "truffle": "^4.1.12",
+    "truffle": "^4.1.15",
     "web3": "^1.0.0-beta.37",
     "zeppelin-solidity": "^1.10.0"
   },
