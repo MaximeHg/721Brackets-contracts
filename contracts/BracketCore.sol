@@ -1,0 +1,37 @@
+pragma solidity ^0.5.0;
+
+import 'openzeppelin-solidity/contracts/token/ERC721/ERC721Full.sol';
+import 'openzeppelin-solidity/contracts/token/ERC721/ERC721Mintable.sol';
+
+contract BracketCore is ERC721Full, ERC721Mintable {
+  mapping (uint=>uint8[63]) predictions;
+
+  uint nextTokenId = 0;
+  // Thursday 21 March 2019 16:00:00 GMT
+  uint submissionsDeadline = 1553184000;
+
+  constructor() ERC721Full("March Madness Bracket", "MMBK") public {
+  }
+
+  modifier submissionsAllowed() {
+    require(now < submissionsDeadline);
+    _;
+  }
+
+  function mint(address to, uint8[63] memory bracketPredictions) public onlyMinter submissionsAllowed {
+    predictions[nextTokenId] = bracketPredictions;
+    super.mint(to, nextTokenId);
+
+    nextTokenId++;
+  }
+
+  function changePredictions(uint tokenId, uint8[63] memory bracketPredictions) public submissionsAllowed {
+    require(ownerOf(tokenId) == msg.sender);
+
+    predictions[tokenId] = bracketPredictions;
+  }
+
+  function getPredictions(uint256 tokenId) public view returns(uint8[63] memory) {
+    return predictions[tokenId];
+  }
+}
