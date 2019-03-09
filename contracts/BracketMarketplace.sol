@@ -17,6 +17,7 @@ contract BracketMarketplace {
   event BracketCreated(uint tokenId, uint8[63] predictions);
   event BracketOnSale(uint tokenId, uint price);
   event BracketSold(uint tokenId, address from, address to);
+  event ListingCleared(uint tokenId);
 
   constructor(address _bracketContract) public {
     bracketContract = BracketCore(_bracketContract);
@@ -43,7 +44,18 @@ contract BracketMarketplace {
   function removeSellListing(uint tokenId) public {
     require(bracketContract.ownerOf(tokenId) == msg.sender);
     onSale[tokenId].onSale = false;
-    bracketContract.approve(msg.sender, tokenId);
+    if(bracketContract.getApproved(tokenId) == address(this)) {
+      bracketContract.approve(address(0), tokenId);
+    }
+  }
+
+  // in case the approval was revoked for some reason
+  function clearListing(uint tokenId) public {
+    require(onSale[tokenId].onSale);
+    if(bracketContract.getApproved(tokenId) != address(this)) {
+      onSale[tokenId].onSale = false;
+      emit ListingCleared(tokenId);
+    }
   }
 
   function buyBracketOnSale(uint tokenId) public payable {
@@ -52,17 +64,20 @@ contract BracketMarketplace {
 
     address payable owner = address(uint160(bracketContract.ownerOf(tokenId)));
 
-    executeTransfer(tokenId, owner, msg.sender);
+    if(bracketContract.getApproved(tokenId) == address(this)) {
+      executeTransfer(tokenId, owner, msg.sender);
 
-    owner.transfer(onSale[tokenId].price);
+      emit BracketSold(tokenId, owner, msg.sender);
+    } else {
+      emit ListingCleared(tokenId);
+    }
 
     onSale[tokenId].onSale = false;
-
-    emit BracketSold(tokenId, owner, msg.sender);
   }
 
-  function executeTransfer(uint tokenId, address from, address to) private {
+  function executeTransfer(uint tokenId, address payable from, address to) private {
     bracketContract.transferFrom(from, to, tokenId);
+    from.transfer(onSale[tokenId].price);
   }
 
   function isOnSale(uint tokenId) public view returns (bool, uint) {
