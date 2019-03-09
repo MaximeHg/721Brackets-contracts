@@ -96,9 +96,21 @@ contract('BracketMarketplace', function(accounts) {
 
     it('Should be able to buy a new bracket with correct tx value', async () => {
       let predictionsArray = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-      await BracketMarketplaceInstance.buyNewBracket(predictionsArray, {from:accounts[2], value:10000000000000000});
+      await BracketMarketplaceInstance.buyNewBracket(predictionsArray, {from:accounts[2], value:"10000000000000000"});
       let owner = await BracketCoreInstance.ownerOf(0);
       assert.equal(owner, accounts[2]);
+    });
+
+    it('Should be able to buy a new bracket with superior tx value', async () => {
+      let predictionsArray = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+      await BracketMarketplaceInstance.buyNewBracket(predictionsArray, {from:accounts[2], value:"10000000000000001"});
+      let owner = await BracketCoreInstance.ownerOf(1);
+      assert.equal(owner, accounts[2]);
+    });
+
+    it('Shouldnt be able to buy a new bracket with inferior tx value', async () => {
+      let predictionsArray = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+      await BracketMarketplaceInstance.buyNewBracket(predictionsArray, {from:accounts[2], value:"9999999999999999"}).should.be.rejectedWith(revert);
     });
 
   });
