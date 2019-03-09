@@ -91,6 +91,14 @@ contract('BracketMarketplace', function(accounts) {
     before(async () => {
       BracketCoreInstance = await BracketCore.new();
       BracketMarketplaceInstance = await BracketMarketplace.new(BracketCoreInstance.address);
+      await BracketCoreInstance.addMinter(BracketMarketplaceInstance.address);
+    });
+
+    it('Should be able to buy a new bracket with correct tx value', async () => {
+      let predictionsArray = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+      await BracketMarketplaceInstance.buyNewBracket(predictionsArray, {from:accounts[2], value:10000000000000000});
+      let owner = await BracketCoreInstance.ownerOf(0);
+      assert.equal(owner, accounts[2]);
     });
 
   });
