@@ -115,6 +115,14 @@ contract('BracketMarketplace', function(accounts) {
       await BracketMarketplaceInstance.buyNewBracket(predictionsArray, {from:accounts[2], value:"9999999999999999"}).should.be.rejectedWith(revert);
     });
 
+    it('Should be able to withdraw funds from contract', async () => {
+      let balanceContractBefore = await web3.eth.getBalance(BracketMarketplaceInstance.address);
+      assert.isTrue(balanceContractBefore > 0);
+      await BracketMarketplaceInstance.withdrawFunds();
+      let balanceContractAfter = await web3.eth.getBalance(BracketMarketplaceInstance.address);
+      assert.equal(balanceContractAfter, 0);
+    });
+
     it('Should be able to list a bracket for sale', async () => {
       await BracketCoreInstance.approve(BracketMarketplaceInstance.address, 0, {from:accounts[2]})
       await BracketMarketplaceInstance.sellBracket(0, "1000000000000000", {from:accounts[2]});
