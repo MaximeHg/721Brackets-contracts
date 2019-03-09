@@ -115,15 +115,23 @@ contract('BracketMarketplace', function(accounts) {
 
     it('Should be able to list a bracket for sale', async () => {
       await BracketCoreInstance.approve(BracketMarketplaceInstance.address, 0, {from:accounts[2]})
-      await BracketMarketplaceInstance.sellBracket(0, 10000, {from:accounts[2]});
+      await BracketMarketplaceInstance.sellBracket(0, "1000000000000000", {from:accounts[2]});
       let listing = await BracketMarketplaceInstance.isOnSale(0);
       assert.equal(listing[0], true);
-      assert.equal(listing[1].toNumber(), 10000)
+      assert.equal(listing[1].toNumber(), 1000000000000000)
     });
 
     it('Shouldnt be able to list a bracket for sale that is not mine', async () => {
       // in fact what will throw is the lack of approval
       await BracketMarketplaceInstance.sellBracket(1, 10000, {from:accounts[1]}).should.be.rejectedWith(revert);
+    });
+
+    it('Should be able to buy a listed bracket', async () => {
+      await BracketMarketplaceInstance.buyBracketOnSale(0, {from:accounts[1], value: "100000000000000000"})
+      let listing = await BracketMarketplaceInstance.isOnSale(0);
+      assert.equal(listing[0], false);
+      let owner = await BracketCoreInstance.ownerOf(0);
+      assert.equal(owner, accounts[1]);
     });
 
   });
