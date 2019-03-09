@@ -31,11 +31,11 @@ contract BracketMarketplace {
   }
 
   function sellBracket(uint tokenId, uint price) public {
-    require(bracketContract.ownerOf(tokenId) == msg.sender);
+    require(bracketContract.ownerOf(tokenId) == msg.sender, "sender is not the owner");
+    require(bracketContract.getApproved(tokenId) == address(this), "contract has not been approved for selling");
 
     onSale[tokenId].onSale = true;
     onSale[tokenId].price = price;
-    bracketContract.approve(address(this), tokenId);
 
     emit BracketOnSale(tokenId, price);
   }
