@@ -84,7 +84,7 @@ contract('BracketMarketplace', function(accounts) {
 
   });
 
-  describe('Bracket creation', () => {
+  describe('Bracket buying and selling', () => {
     let BracketCoreInstance;
     let BracketMarketplaceInstance;
 
@@ -111,6 +111,19 @@ contract('BracketMarketplace', function(accounts) {
     it('Shouldnt be able to buy a new bracket with inferior tx value', async () => {
       let predictionsArray = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
       await BracketMarketplaceInstance.buyNewBracket(predictionsArray, {from:accounts[2], value:"9999999999999999"}).should.be.rejectedWith(revert);
+    });
+
+    it('Should be able to list a bracket for sale', async () => {
+      await BracketCoreInstance.approve(BracketMarketplaceInstance.address, 0, {from:accounts[2]})
+      await BracketMarketplaceInstance.sellBracket(0, 10000, {from:accounts[2]});
+      let listing = await BracketMarketplaceInstance.isOnSale(0);
+      assert.equal(listing[0], true);
+      assert.equal(listing[1].toNumber(), 10000)
+    });
+
+    it('Shouldnt be able to list a bracket for sale that is not mine', async () => {
+      // in fact what will throw is the lack of approval
+      await BracketMarketplaceInstance.sellBracket(1, 10000, {from:accounts[1]}).should.be.rejectedWith(revert);
     });
 
   });
