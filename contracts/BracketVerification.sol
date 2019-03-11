@@ -21,8 +21,8 @@ contract BracketVerification {
   uint round3End = 1553943600;
   // Monday 1 April 2019 10:00:00 GMT
   uint round4End = 1554112800;
-  // Monday 8 April 2019 04:00:00 GMT
-  uint tournamentEnd = 1554696000;
+  // Tuesday 9 April 2019 07:00:00 GMT
+  uint tournamentEnd = 1554793200;
 
   uint8[63] tournamentResults;
 
