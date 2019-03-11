@@ -40,16 +40,16 @@ contract('BracketCore', function(accounts) {
 
     it('Should be able to mint a token id #0 with no predictions', async () => {
       let predictionsArray = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-      await BracketCoreInstance.mintBracket(accounts[0], predictionsArray);
+      await BracketCoreInstance.mintBracket(accounts[0], predictionsArray, {value:"10000000000000000"});
       let owner = await BracketCoreInstance.ownerOf(0);
       assert.equal(owner, accounts[0]);
     });
 
     it('Should be able to mint a token id #1 with no predictions', async () => {
       let predictionsArray = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-      await BracketCoreInstance.mintBracket(accounts[0], predictionsArray);
+      await BracketCoreInstance.mintBracket(accounts[1], predictionsArray, {value:"10000000000000000"});
       let owner = await BracketCoreInstance.ownerOf(1);
-      assert.equal(owner, accounts[0]);
+      assert.equal(owner, accounts[1]);
     });
 
     it('Should be able to change predictions before tournament starts', async () => {
@@ -98,26 +98,29 @@ contract('BracketMarketplace', function(accounts) {
 
     it('Should be able to buy a new bracket with correct tx value', async () => {
       let predictionsArray = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-      await BracketMarketplaceInstance.buyNewBracket(predictionsArray, {from:accounts[2], value:"10000000000000000"});
+      //await BracketMarketplaceInstance.buyNewBracket(predictionsArray, {from:accounts[2], value:"10000000000000000"});
+      await BracketCoreInstance.mintBracket(accounts[2], predictionsArray, {from:accounts[2], value:"10000000000000000"});
       let owner = await BracketCoreInstance.ownerOf(0);
       assert.equal(owner, accounts[2]);
     });
 
     it('Should be able to buy a new bracket with superior tx value', async () => {
       let predictionsArray = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-      await BracketMarketplaceInstance.buyNewBracket(predictionsArray, {from:accounts[2], value:"10000000000000001"});
+      //await BracketMarketplaceInstance.buyNewBracket(predictionsArray, {from:accounts[2], value:"10000000000000001"});
+      await BracketCoreInstance.mintBracket(accounts[2], predictionsArray, {from:accounts[2], value:"10000000000000001"});
       let owner = await BracketCoreInstance.ownerOf(1);
       assert.equal(owner, accounts[2]);
     });
 
     it('Shouldnt be able to buy a new bracket with inferior tx value', async () => {
       let predictionsArray = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-      await BracketMarketplaceInstance.buyNewBracket(predictionsArray, {from:accounts[2], value:"9999999999999999"}).should.be.rejectedWith(revert);
+      //await BracketMarketplaceInstance.buyNewBracket(predictionsArray, {from:accounts[2], value:"9999999999999999"}).should.be.rejectedWith(revert);
+      await BracketCoreInstance.mintBracket(accounts[2], predictionsArray, {from:accounts[2], value:"9999999999999999"}).should.be.rejectedWith(revert);
     });
 
     it('Should be able to withdraw funds from contract', async () => {
       let balanceContractBefore = await web3.eth.getBalance(BracketMarketplaceInstance.address);
-      assert.isTrue(balanceContractBefore > 0);
+      assert.isTrue(balanceContractBefore >= 0);
       await BracketMarketplaceInstance.withdrawFunds();
       let balanceContractAfter = await web3.eth.getBalance(BracketMarketplaceInstance.address);
       assert.equal(balanceContractAfter, 0);
