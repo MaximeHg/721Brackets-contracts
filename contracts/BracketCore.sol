@@ -9,6 +9,7 @@ contract BracketCore is ERC721Full, ERC721Mintable {
   uint public nextTokenId = 0;
   // Thursday 21 March 2019 16:00:00 GMT
   uint public submissionsDeadline = 1553184000;
+  uint bracketPrice = 10 finney;
 
   event NewSubmissions(uint tokenId, uint8[63] predictions);
   event UpdatedSubmissions(uint tokenId, uint8[63] predictions);
@@ -21,17 +22,20 @@ contract BracketCore is ERC721Full, ERC721Mintable {
     _;
   }
 
-  function mintBracket(address to, uint8[63] memory bracketPredictions) public onlyMinter submissionsAllowed
-    returns (uint)
+  function mintBracket(address to, uint8[63] memory bracketPredictions) public payable submissionsAllowed
   {
+    require(msg.value >= bracketPrice, "price paid not enough");
+
     predictions[nextTokenId] = bracketPredictions;
-    super.mint(to, nextTokenId);
+    executeMinting(to, nextTokenId);
 
     emit NewSubmissions(nextTokenId, bracketPredictions);
 
     nextTokenId++;
+  }
 
-    return(nextTokenId-1);
+  function executeMinting(address to, uint id) internal {
+    _mint(to, id);
   }
 
   function changePredictions(uint tokenId, uint8[63] memory bracketPredictions) public submissionsAllowed {

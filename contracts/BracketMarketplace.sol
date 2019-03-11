@@ -13,7 +13,7 @@ contract BracketMarketplace is Ownable {
 
   mapping (uint=>saleStatus) onSale;
 
-  uint bracketPrice = 10 finney;
+  //uint bracketPrice = 10 finney;
 
   event BracketCreated(uint tokenId, uint8[63] predictions);
   event BracketOnSale(uint tokenId, uint price);
@@ -24,13 +24,13 @@ contract BracketMarketplace is Ownable {
     bracketContract = BracketCore(_bracketContract);
   }
 
-  function buyNewBracket(uint8[63] memory predictions) public payable {
+  /*function buyNewBracket(uint8[63] memory predictions) public payable {
     require(msg.value >= bracketPrice, "price paid not enough");
 
     uint tokenId = bracketContract.mintBracket(msg.sender, predictions);
 
     emit BracketCreated(tokenId, predictions);
-  }
+  }*/
 
   function sellBracket(uint tokenId, uint price) public {
     require(bracketContract.ownerOf(tokenId) == msg.sender, "sender is not the owner");
@@ -70,7 +70,6 @@ contract BracketMarketplace is Ownable {
 
       emit BracketSold(tokenId, owner, msg.sender);
     } else {
-      // TO CHECK
       msg.sender.transfer(msg.value);
       emit ListingCleared(tokenId);
     }
